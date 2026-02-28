@@ -3,7 +3,7 @@
 // Called by the checkout page Step 2 when the user clicks "Place Order".
 
 import { NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 
 // ─── Request body shape (sent from the client) ────────────────────────────────
 
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Create PaymentIntent ─────────────────────────────────────────────────
-    const paymentIntent = await stripe.paymentIntents.create({
+    const paymentIntent = await getStripe().paymentIntents.create({
       amount:               totalPence,
       currency:             "gbp",
       payment_method_types: ["card"],
