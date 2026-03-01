@@ -17,6 +17,7 @@ async function getAdminProfile() {
   if (!user) return null;
 
   const admin = createAdminClient();
+  if (!admin) return null;
   const { data } = await admin
     .from("profiles")
     .select("full_name, is_admin")
