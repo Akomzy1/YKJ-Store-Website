@@ -48,6 +48,7 @@ function rowToProduct(row: AnyRow): Product {
 /** Fetch all products, newest first. Returns [] on error. */
 export async function getProducts(): Promise<Product[]> {
   const supabase = createAdminClient();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -60,6 +61,7 @@ export async function getProducts(): Promise<Product[]> {
 /** Fetch a single product by slug. Returns null if not found. */
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const supabase = createAdminClient();
+  if (!supabase) return null;
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -73,6 +75,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 /** Fetch all products in a given category (by slug). */
 export async function getProductsByCategory(categorySlug: string): Promise<Product[]> {
   const supabase = createAdminClient();
+  if (!supabase) return [];
 
   // First resolve category_id from slug
   const { data: catData } = await supabase
@@ -97,6 +100,7 @@ export async function getProductsByCategory(categorySlug: string): Promise<Produ
 /** Fetch featured products (is_featured = true). */
 export async function getFeaturedProducts(): Promise<Product[]> {
   const supabase = createAdminClient();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -110,6 +114,7 @@ export async function getFeaturedProducts(): Promise<Product[]> {
 /** Fetch deal products (is_deal = true). */
 export async function getDealProducts(): Promise<Product[]> {
   const supabase = createAdminClient();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -123,6 +128,7 @@ export async function getDealProducts(): Promise<Product[]> {
 /** Fetch newest N products. */
 export async function getNewArrivals(limit = 8): Promise<Product[]> {
   const supabase = createAdminClient();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -138,6 +144,7 @@ export async function getNewArrivals(limit = 8): Promise<Product[]> {
 /** Fetch all categories with product counts. */
 export async function getCategories(): Promise<Category[]> {
   const supabase = createAdminClient();
+  if (!supabase) return [];
 
   const { data, error } = await supabase
     .from("categories")
@@ -168,6 +175,7 @@ export interface AdminStats {
 /** Aggregate stats for the admin dashboard. */
 export async function getAdminStats(): Promise<AdminStats> {
   const supabase = createAdminClient();
+  if (!supabase) return { totalProducts: 0, totalOrders: 0, ordersToday: 0, revenueToday: 0 };
 
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
@@ -204,6 +212,7 @@ export async function getRelatedProducts(
   limit = 4
 ): Promise<Product[]> {
   const supabase = createAdminClient();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -224,6 +233,7 @@ export type AdminOrder = any; // raw Supabase order row + items
 /** Fetch all orders for the admin panel, newest first. */
 export async function getAdminOrders(): Promise<AdminOrder[]> {
   const supabase = createAdminClient();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from("orders")
     .select("*, order_items(*)")

@@ -33,23 +33,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority:        r.priority,
   }));
 
-  // Category pages — fetched from Supabase (or empty array on error)
-  const categories = await getCategories().catch(() => []);
-  const categoryEntries: MetadataRoute.Sitemap = categories.map((cat) => ({
-    url:             `${BASE_URL}/shop/${cat.slug}`,
-    lastModified:    now,
-    changeFrequency: "weekly",
-    priority:        0.8,
-  }));
+  try {
+    const [categories, products] = await Promise.all([
+      getCategories(),
+      getProducts(),
+    ]);
 
-  // Product detail pages — fetched from Supabase (or empty array on error)
-  const products = await getProducts().catch(() => []);
-  const productEntries: MetadataRoute.Sitemap = products.map((p) => ({
-    url:             `${BASE_URL}/product/${p.slug}`,
-    lastModified:    new Date(p.created_at),
-    changeFrequency: "weekly",
-    priority:        0.7,
-  }));
+    const categoryEntries: MetadataRoute.Sitemap = categories.map((cat) => ({
+      url:             `${BASE_URL}/shop/${cat.slug}`,
+      lastModified:    now,
+      changeFrequency: "weekly",
+      priority:        0.8,
+    }));
 
-  return [...staticEntries, ...categoryEntries, ...productEntries];
+    const productEntries: MetadataRoute.Sitemap = products.map((p) => ({
+      url:             `${BASE_URL}/product/${p.slug}`,
+      lastModified:    new Date(p.created_at),
+      changeFrequency: "weekly",
+      priority:        0.7,
+    }));
+
+    return [...staticEntries, ...categoryEntries, ...productEntries];
+  } catch (error) {
+    console.error("[sitemap] Could not fetch dynamic pages — returning static-only sitemap:", error);
+    return staticEntries;
+  }
 }
